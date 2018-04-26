@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.5</TargetFramework>
+	<Version>0.1.0</Version>
+	<Description>Graceful termination of console apps in two levels</Description>
+	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<PackageProjectUrl>https://github.com/johnknoop/GracefulConsoleRunner</PackageProjectUrl>
+  </PropertyGroup>
+
+</Project>
