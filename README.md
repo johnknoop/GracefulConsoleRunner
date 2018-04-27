@@ -43,7 +43,7 @@ The `runContext` parameter offers two properties:
 
 ```csharp
 GracefulConsoleRunner.Run(
-    run: runContext =>
+    run: context =>
     {
         myTimer.Elapsed += (sender, e) => {
 
@@ -54,7 +54,7 @@ GracefulConsoleRunner.Run(
             }
 
             // Once we've decided to proceed, we don't want to be interrupted until processing is complete
-            using (runContext.BlockInterruption())
+            using (context.BlockInterruption())
             {
                 // Your code here
             }
@@ -63,9 +63,7 @@ GracefulConsoleRunner.Run(
     },
     cleanup: () =>
     {
-        /* 
-        * Any clean-up code you want to ensure being run before exit
-        */
+        // Any clean-up code you want to ensure being run before exit
     },
     gracePeriodSeconds: 30);
 ```
