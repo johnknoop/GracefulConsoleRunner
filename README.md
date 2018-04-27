@@ -13,10 +13,9 @@ When your application logic is invoked by external events, such as a message bus
 Passing a CancellationToken down the call hierarchy enables you opt-out of starting new work.
 
 ### 2. A hold-off mechanism to prevent interruption of important work
-When termination is requested, you'll want a grace period between soft and hard termination, allowing your ongoing work to complete. The termination sequence looks like this:
+When shutdown is requested, you'll want a grace period between soft and hard termination, allowing your ongoing work to complete. The termination sequence looks like this:
 
 ```
-                                                                                         
 +-----------------------+          Is work      Yes        +---------------------------+
 | Termination requested |----->  being done?  -----------> | Wait for work to complete |
 +-----------------------+                                  +---------------------------+
@@ -50,7 +49,7 @@ GracefulConsoleRunner.Run(
 
             if (context.ApplicationTermination.IsCancellationRequested)
             {
-                // Graceful termination has been requested. Don't process the message.
+                // Graceful termination has been requested.
                 return;
             }
 
