@@ -68,4 +68,4 @@ GracefulConsoleRunner.Run(
     gracePeriodSeconds: 30);
 ```
 
-In a message queue scenario, the pattern would be the same, where you first check for cancellation, and then wrap the message processing in a `BlockInterruption()` to make sure the message is processed and acknowledged without interruption.
+In a message bus scenario, the pattern would be the same, where you first check for cancellation, and then wrap the message processing in a `BlockInterruption()` to make sure the message is processed and acknowledged without interruption.
