@@ -26,7 +26,7 @@ When shutdown is requested, you'll want a grace period between soft and hard ter
                                                                    +----------+      +------+                 
 ```
 
-Paste this in your startup routine:
+To get started, simply paste this in your startup routine:
 
 ```csharp
 GracefulConsoleRunner.Run(runContext => {
