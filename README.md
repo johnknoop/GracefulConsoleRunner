@@ -10,10 +10,10 @@ This is a .NET Standard 1.5 library.
 When your application logic is invoked by external events, such as a message bus or a scheduler, you'll want to control termination in two levels:
 
 ### 1. Best-effort cancellation
-Passing a CancellationToken down the call hierarchy enables you opt-out of starting new work.
+Passing a CancellationToken down the call hierarchy enables you opt-out of starting new work once termination has begun.
 
 ### 2. A hold-off mechanism to prevent interruption of important work
-When shutdown is requested, you'll want a grace period between soft and hard termination, allowing your ongoing work to complete. The termination sequence looks like this:
+When shutdown is requested, you'll want a grace period between soft and hard termination, allowing your ongoing work to complete. This termination sequence looks like this:
 
 ```
 +-----------------------+          Is work      Yes        +---------------------------+
@@ -37,7 +37,6 @@ GracefulConsoleRunner.Run(runContext => {
 The `runContext` parameter offers two properties:
 1. A cancellation token for best-effort cancellation
 2. A method called `BlockInterruption` that returns an `IDisposable`. Use this to wrap any code you want to protect from interruption.
-
 
 ## Example
 
@@ -67,5 +66,7 @@ GracefulConsoleRunner.Run(
     },
     gracePeriodSeconds: 30);
 ```
+
+Make sure to check if termination is requested before calling `BlockInterruption()`. Only the "blocks" that are created at the time of shutdown is allowed to execute until completion.
 
 In a message bus scenario, the pattern would be the same, where you first check for cancellation, and then wrap the message processing in a `BlockInterruption()` to make sure the message is processed and acknowledged without interruption.
