@@ -6,7 +6,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 {
 	public static class GracefulConsoleRunner
 	{
-		public static void Run(Action<GracefulConsoleRunContext> run, Action cleanup, int gracePeriodSeconds = 10)
+		public static void Run(Action<GracefulConsoleRunContext> run, Action cleanup, TimeSpan? gracePeriod = null)
 		{
 			Func<Task> cleanupJob = async () =>
 			{
@@ -14,10 +14,10 @@ namespace JohnKnoop.GracefulConsoleRunner
 				await Task.CompletedTask;
 			};
 
-			Run(run, cleanupJob, gracePeriodSeconds);;
+			Run(run, cleanupJob, gracePeriod);
 		}
 
-		public static void Run(Action<GracefulConsoleRunContext> run, Func<Task> cleanup, int gracePeriodSeconds = 10)
+		public static void Run(Action<GracefulConsoleRunContext> run, Func<Task> cleanup, TimeSpan? gracePeriod = null)
 		{
 			var gracefulShutdown = new CancellationTokenSource();
 			var runContext = new GracefulConsoleRunContext(gracefulShutdown.Token);
@@ -34,7 +34,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 				eventArgs.Cancel = true;
 				gracefulShutdown.Cancel();
 
-				runContext.WaitForCompletion(gracePeriodSeconds);
+				runContext.WaitForCompletion(gracePeriod);
 
 				cleanup().GetAwaiter().GetResult();
 

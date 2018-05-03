@@ -24,14 +24,19 @@ namespace JohnKnoop.GracefulConsoleRunner
 		/// </summary>
 		public IDisposable BlockInterruption()
 		{
+			if (ApplicationTermination.IsCancellationRequested)
+			{
+				throw new OperationCanceledException("Cannot start new block after termination initiated");
+			}
+
 			var wrapper = new WorkWrapper();
 			_workInProcess.Add(wrapper.Work);
 			return wrapper;
 		}
 
-		public void WaitForCompletion(TimeSpan gracePeriod)
+		public void WaitForCompletion(TimeSpan? gracePeriod)
 		{
-			Task.WaitAll(_workInProcess.ToArray(), gracePeriod);
+			Task.WaitAll(_workInProcess.ToArray(), gracePeriod ?? TimeSpan.FromMilliseconds(-1));
 		}
 	}
 }
