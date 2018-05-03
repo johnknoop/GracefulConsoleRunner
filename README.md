@@ -64,7 +64,7 @@ GracefulConsoleRunner.Run(
     {
         // Any clean-up code you want to ensure being run before exit
     },
-    gracePeriodSeconds: 30);
+    gracePeriod: TimeSpan.FromSeconds(10));
 ```
 
 Make sure to check if termination is requested before calling `BlockInterruption()`. Only the "blocks" that are created at the time of shutdown is allowed to execute until completion.
