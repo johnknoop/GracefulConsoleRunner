@@ -29,9 +29,9 @@ namespace JohnKnoop.GracefulConsoleRunner
 			return wrapper;
 		}
 
-		public void WaitForCompletion()
+		public void WaitForCompletion(TimeSpan gracePeriod)
 		{
-			Task.WaitAll(_workInProcess).GetAwaiter().GetResult();
+			Task.WaitAll(_workInProcess.ToArray(), gracePeriod);
 		}
 	}
 }
