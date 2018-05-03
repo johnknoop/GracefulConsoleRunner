@@ -34,7 +34,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 				eventArgs.Cancel = true;
 				gracefulShutdown.Cancel();
 
-				runContext.WaitForCompletion();
+				runContext.WaitForCompletion(gracePeriodSeconds);
 
 				cleanup().GetAwaiter().GetResult();
 
