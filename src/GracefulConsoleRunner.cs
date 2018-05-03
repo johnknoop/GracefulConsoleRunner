@@ -34,11 +34,12 @@ namespace JohnKnoop.GracefulConsoleRunner
 				eventArgs.Cancel = true;
 				gracefulShutdown.Cancel();
 
-				runContext.WaitForCompletion(gracePeriod);
-
-				cleanup().GetAwaiter().GetResult();
-
-				Environment.Exit(0);
+				// Continue on a different thread to release this event handler
+				runContext.WhenWorkCompleted(gracePeriod).ContinueWith(x =>
+				{
+					Task.WaitAll(cleanup());
+					Environment.Exit(0);
+				});
 			};
 
 			Console.WriteLine("Press CTRL+C to exit");

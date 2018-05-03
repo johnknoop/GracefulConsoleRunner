@@ -34,9 +34,9 @@ namespace JohnKnoop.GracefulConsoleRunner
 			return wrapper;
 		}
 
-		public void WaitForCompletion(TimeSpan? gracePeriod)
+		internal Task WhenWorkCompleted(TimeSpan? gracePeriod)
 		{
-			Task.WaitAll(_workInProcess.ToArray(), gracePeriod ?? TimeSpan.FromMilliseconds(-1));
+			return Task.WhenAny(Task.WhenAll(_workInProcess), Task.Delay(gracePeriod ?? TimeSpan.FromMilliseconds(-1)));
 		}
 	}
 }
