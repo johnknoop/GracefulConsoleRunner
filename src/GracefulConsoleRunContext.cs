@@ -31,7 +31,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 
 		public void WaitForCompletion()
 		{
-			Task.WhenAll(_workInProcess).GetAwaiter().GetResult();
+			Task.WaitAll(_workInProcess).GetAwaiter().GetResult();
 		}
 	}
 }
