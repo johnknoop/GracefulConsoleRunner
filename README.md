@@ -12,10 +12,10 @@ Your app consumes messages off a message queue, and saves a new object to your d
 
 This package prevents this using two mechanisms:
 
-#### 1. Prevent interruption of ongoing work
+### 1. Prevent interruption of ongoing work
 When shutdown is requested, you'll want a grace period before hard termination, allowing your ongoing work to complete.
 
-#### 2. Best-effort cancellation
+### 2. Best-effort cancellation
 A CancellationToken enables you opt-out of starting new work once termination has begun.
 
 The termination sequence looks like this:
