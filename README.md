@@ -8,7 +8,7 @@ This is a .NET Standard 1.5 library.
 Add graceful termination of your event-driven application without risking partially handled events.
 
 ### Typical use case:
-Your app consumes messages off a message queue, and saves a new object to your database for each message it receives, and then acks the message so the queue knows it has been processed. The queue supports exactly-once-delivery using deduplication, so you haven't bothered making your app idempotent. However, if your application is shut down just after saving the Order to the database, thus failing to ack the message, it will (depending on the queue) be consumed again, resulting in duplicate database objects. This scenario is applicable to message queues such as RabbitMQ, Azure Service Bus and Amazon SQS.
+Your app consumes messages off a message queue, and saves a new object to your database for each message it receives, and then acks the message so the queue knows it has been processed. The queue supports exactly-once-delivery using deduplication, so you haven't bothered making your app idempotent. However, if your application is shut down just after saving the object to the database, thus failing to ack the message, it will (depending on the queue) be consumed again, resulting in duplicate database objects. This scenario is applicable to message queues such as RabbitMQ, Azure Service Bus and Amazon SQS.
 
 This package prevents this using two mechanisms:
 
