@@ -72,3 +72,11 @@ GracefulConsoleRunner.Run(
 ```
 
 Only work that has been started at the time of shutdown is allowed to execute until completion.
+
+## Running in a Docker container
+
+Since `Console.CancelKeyPress` isn't triggered by a SIGTERM, which is the signal that Docker sends when stopping the container, you need to instruct docker to send a SIGINT instead:
+```
+STOPSIGNAL SIGINT
+```
+Docker will send another SIGINT after 10 seconds, so there is no point in setting a graceperiod longer than that.
