@@ -33,6 +33,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 
 				eventArgs.Cancel = true;
 				gracefulShutdown.Cancel();
+				runContext.TerminationRequested();
 
 				// Continue on a different thread to release this event handler
 				runContext.WhenWorkCompleted(gracePeriod).ContinueWith(x =>
