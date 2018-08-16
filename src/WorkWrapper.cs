@@ -7,13 +7,16 @@ namespace JohnKnoop.GracefulConsoleRunner
 	{
 		private readonly TaskCompletionSource<object> _taskCompletionSource;
 
-		internal WorkWrapper()
+		internal WorkWrapper(bool succeeded)
 		{
 			_taskCompletionSource = new TaskCompletionSource<object>();
 			Work = _taskCompletionSource.Task;
+			Succeeded = succeeded;
 		}
 
-		public Task Work { get; }
+		internal Task Work { get; }
+
+		public bool Succeeded { get; private set; }
 
 		public void Dispose()
 		{

@@ -7,7 +7,7 @@ namespace JohnKnoop.GracefulConsoleRunner
 {
 	public class GracefulConsoleRunContext
 	{
-		private readonly ConcurrentBag<Task> _workInProcess = new ConcurrentBag<Task>();
+		private readonly BlockingCollection<Task> _workInProcess = new BlockingCollection<Task>();
 
 		public GracefulConsoleRunContext(CancellationToken applicationTermination)
 		{
@@ -22,21 +22,25 @@ namespace JohnKnoop.GracefulConsoleRunner
 		/// <summary>
 		/// Creates a disposable that will hold off termination until it is disposed
 		/// </summary>
-		public IDisposable BlockInterruption()
+		public WorkWrapper BlockInterruption()
 		{
-			if (ApplicationTermination.IsCancellationRequested)
+			var wrapper = new WorkWrapper(true);
+
+			if (!_workInProcess.TryAdd(wrapper.Work))
 			{
-				throw new OperationCanceledException("Cannot start new block after termination initiated");
+				return new WorkWrapper(false);
 			}
 
-			var wrapper = new WorkWrapper();
-			_workInProcess.Add(wrapper.Work);
 			return wrapper;
 		}
 
 		internal Task WhenWorkCompleted(TimeSpan? gracePeriod)
 		{
 			return Task.WhenAny(Task.WhenAll(_workInProcess), Task.Delay(gracePeriod ?? TimeSpan.FromMilliseconds(-1)));
+		}
+
+		internal void TerminationRequested() {
+			_workInProcess.CompleteAdding();
 		}
 	}
 }
