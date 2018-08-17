@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
-	<Version>0.3.0</Version>
+	<Version>0.4.0</Version>
 	<Description>Graceful termination of console apps in two levels</Description>
 	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	<PackageProjectUrl>https://github.com/johnknoop/GracefulConsoleRunner</PackageProjectUrl>
