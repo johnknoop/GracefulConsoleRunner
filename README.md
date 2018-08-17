@@ -1,19 +1,24 @@
-Add (truly) graceful termination to your .NET console app!
-
 ## Install
     PM> Install-Package JohnKnoop.GracefulConsoleRunner
 
 This is a .NET Standard 1.5 library.
 
-## What is it?
+## When to use?
 
-When your application logic is invoked by external events, such as a message bus or a scheduler, you'll want to control termination in two levels:
+Add graceful termination of your event-driven application without risking partially handled events.
 
-### 1. Best-effort cancellation
-Passing a CancellationToken down the call hierarchy enables you opt-out of starting new work once termination has begun.
+### Typical use case:
+Your app consumes messages off a message queue, and saves a new object to your database for each message it receives, and then acks the message so the queue knows it has been processed. The queue supports exactly-once-delivery using deduplication, so you haven't bothered making your app idempotent. However, if your application is shut down just after saving the object to the database, thus failing to ack the message, it will (depending on the queue) be consumed again, resulting in duplicate database objects. This scenario is applicable to message queues such as RabbitMQ, Azure Service Bus and Amazon SQS.
 
-### 2. A hold-off mechanism to prevent interruption of important work
-When shutdown is requested, you'll want a grace period between soft and hard termination, allowing your ongoing work to complete. This termination sequence looks like this:
+This package prevents this using two mechanisms:
+
+### 1. Prevent interruption of ongoing work
+When shutdown is requested, you'll want a grace period before hard termination, allowing your ongoing work to complete.
+
+### 2. Best-effort cancellation
+A CancellationToken enables you opt-out of starting new work once termination has begun.
+
+The termination sequence looks like this:
 
 ```
 +-----------------------+          Is work      Yes        +---------------------------+
@@ -35,7 +40,7 @@ GracefulConsoleRunner.Run(runContext => {
 ```
 
 The `runContext` parameter offers two properties:
-1. A cancellation token for best-effort cancellation
+1. A cancellation token to check before starting
 2. A method called `BlockInterruption` that returns an `IDisposable`. Use this to wrap any code you want to protect from interruption.
 
 ## Example
@@ -67,6 +72,4 @@ GracefulConsoleRunner.Run(
     gracePeriod: TimeSpan.FromSeconds(10));
 ```
 
-Make sure to check if termination is requested before calling `BlockInterruption()`. Only the "blocks" that are created at the time of shutdown is allowed to execute until completion.
-
-In a message bus scenario, the pattern would be the same, where you first check for cancellation, and then wrap the message processing in a `BlockInterruption()` to make sure the message is processed and acknowledged without interruption.
+Make sure to check if termination is requested before calling `BlockInterruption()`. Only work that has been started at the time of shutdown is allowed to execute until completion.
