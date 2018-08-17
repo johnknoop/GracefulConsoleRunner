@@ -41,7 +41,7 @@ GracefulConsoleRunner.Run(runContext => {
 
 The `runContext` parameter offers two properties:
 1. A cancellation token to check before starting
-2. A method called `BlockInterruption` that returns an `IDisposable`. Use this to wrap any code you want to protect from interruption.
+2. A method called `BlockInterruption` that returns a `WorkWrapper` that implements `IDisposable`. Use this to wrap any code you want to protect from interruption. If you tried to block interruption after termination already has begun, `WorkWrapper.Succeeded` will be false.
 
 ## Example
 
@@ -51,16 +51,15 @@ GracefulConsoleRunner.Run(
     {
         myTimer.Elapsed += (sender, e) => {
 
-            if (context.ApplicationTermination.IsCancellationRequested)
+            using (var result = context.BlockInterruption())
             {
-                // Graceful termination has been requested.
-                return;
-            }
+                if (result.Succeeded)
+                {
+                    // Graceful termination has been requested.
+                    return;
+                }
 
-            // Once we've decided to proceed, we don't want to be interrupted until processing is complete
-            using (context.BlockInterruption())
-            {
-                // Your code here
+                // Your code here...
             }
 
         };
@@ -72,4 +71,12 @@ GracefulConsoleRunner.Run(
     gracePeriod: TimeSpan.FromSeconds(10));
 ```
 
-Make sure to check if termination is requested before calling `BlockInterruption()`. Only work that has been started at the time of shutdown is allowed to execute until completion.
+Only work that has been started at the time of shutdown is allowed to execute until completion.
+
+## Running in a Docker container
+
+Since `Console.CancelKeyPress` isn't triggered by a SIGTERM, which is the signal that Docker sends when stopping the container, you need to instruct docker to send a SIGINT instead:
+```
+STOPSIGNAL SIGINT
+```
+Docker will send another SIGINT after 10 seconds, so there is no point in setting a graceperiod longer than that.
